@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      font-size: 48px;
+    }
+  </style>
+<p th:text="${'Invitation: [' + branchName + '] [OFFLINE] ' + topicName + ' - ' + lastName + ' ' + firstName +
+ ' ' + date + ' 10am - 12am'}"></p>
+<body>
+<p> Meeting link: </p>
+<p th:text="${linkMeeting}"></p>
+</body>
+</html>
