@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.websocket.OnError;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "EMPLOYEE")
@@ -42,8 +44,7 @@ public class Employee {
     @JoinColumn(name = "BRANCH_NO", nullable = false)
     private CompanyBranch companyBranch;
 
-    @ManyToOne()
-    @JoinColumn(name = "ROLE_NO", nullable = false)
-    private Role role;
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    private List<EmployeeRole> employeeRoles;
 
 }

@@ -1,6 +1,6 @@
 package com.demo.opentalk.service.Impl;
+import com.demo.opentalk.config.ERole;
 import com.demo.opentalk.constants.MessageConstant;
-import com.demo.opentalk.dto.DataSyncDTO;
 import com.demo.opentalk.dto.EmployeeDTO;
 import com.demo.opentalk.dto.ResultDTO;
 import com.demo.opentalk.dto.request.EmployeeRequestDTO;
@@ -8,20 +8,17 @@ import com.demo.opentalk.dto.request.EmployeesRequestDTO;
 import com.demo.opentalk.dto.response.EmployeeResponseDTO;
 import com.demo.opentalk.entity.CompanyBranch;
 import com.demo.opentalk.entity.Employee;
+import com.demo.opentalk.entity.EmployeeRole;
 import com.demo.opentalk.entity.Role;
 import com.demo.opentalk.exception.NotFoundException;
 import com.demo.opentalk.mapper.EmployeeRequestMapper;
 import com.demo.opentalk.mapper.EmployeeResponseMapper;
-import com.demo.opentalk.repository.CompanyBranchRepository;
-import com.demo.opentalk.repository.EmployeeRepository;
-import com.demo.opentalk.repository.OpenTalkTopicRepository;
-import com.demo.opentalk.repository.RoleRepository;
+import com.demo.opentalk.repository.*;
 import com.demo.opentalk.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -41,6 +38,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final RoleRepository roleRepository;
     private final OpenTalkTopicRepository openTalkTopicRepository;
     private final RestTemplate restTemplate;
+    private final EmployeeRoleRepository employeeRoleRepository;
+//    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<EmployeeResponseDTO> syncData(EmployeesRequestDTO employeesRequestDTO) {
@@ -52,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         List<EmployeeDTO> employeeDTOList = resultDTO.getResult();
         if (!companyBranchRepository.findById(employeesRequestDTO.getBranchNo()).isPresent() ||
-                !roleRepository.findById(employeesRequestDTO.getRoleNo()).isPresent()) {
+            roleRepository.getSetRoleByRoleNo(employeesRequestDTO.getRoleNos()).isEmpty()) {
             throw new NotFoundException(MessageConstant.COMPANY_BRANCH_OR_ROLE_IS_NULL);
         }
         List<Employee> employeeListGet = employeeRepository.findAll();
@@ -63,6 +62,9 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .map(Employee::getEmail)
                     .collect(Collectors.toList());
         }
+        List<String> emailDTOList = employeeDTOList.stream()
+                .map(EmployeeDTO::getEmail)
+                .collect(Collectors.toList());
         for (EmployeeDTO employeeDTO : employeeDTOList) {
             if (employeeListGet.isEmpty() || !emailListGet.contains(employeeDTO.getEmail())) {
                 Employee employee = mapper.map(employeeDTO, Employee.class);
@@ -70,11 +72,26 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setActive(employeesRequestDTO.isActive());
                 employee.setPassword(employeesRequestDTO.getPassword());
                 employee.setCompanyBranch(companyBranchRepository.getById(employeesRequestDTO.getBranchNo()));
-                employee.setRole(roleRepository.getById(employeesRequestDTO.getRoleNo()));
+                employee = employeeRepository.save(employee);
+                List<EmployeeRole> employeeRoles = new ArrayList<>();
+                for (int roleNo : employeesRequestDTO.getRoleNos()) {
+                    EmployeeRole employeeRole = new EmployeeRole();
+                    employeeRole.setEmployee(employeeRepository.getById(employee.getEmployeeNo()));
+                    employeeRole.setRole(roleRepository.getById(roleNo));
+                    employeeRoles.add(employeeRole);
+                }
+                employee.setEmployeeRoles(employeeRoles);
                 employeeList.add(employee);
+                employeeRoles = employeeRoleRepository.saveAll(employeeRoles);
             }
         }
         employeeRepository.saveAll(employeeList);
+        for (Employee employee: employeeListGet) {
+            if (!emailDTOList.contains(employee.getEmail())) {
+                employee.setActive(false);
+                employeeRepository.save(employee);
+            }
+        }
         return getEmployeeResponseDTOS(employeeList);
     }
 
@@ -84,7 +101,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             EmployeeResponseDTO employeeResponseDTO = mapper.map(employee, EmployeeResponseDTO.class);
             employeeResponseDTO.setFullName(employee.getLastName() + " " + employee.getFirstName());
             employeeResponseDTO.setBranchName(employee.getCompanyBranch().getBranchName());
-            employeeResponseDTO.setRoleName(employee.getRole().getRoleName());
+            List<ERole> roleNames = new ArrayList<>();
+            for (EmployeeRole employeeRole: employee.getEmployeeRoles()) {
+                ERole roleName = employeeRole.getRole().getRoleName();
+                roleNames.add(roleName);
+            }
+            employeeResponseDTO.setRoleNames(roleNames);
             employeeResponseDTOList.add(employeeResponseDTO);
         }
         return employeeResponseDTOList;
@@ -100,17 +122,30 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRequestMapper.toEntity(employeeRequestDTO);
         employee.setCompanyBranch(companyBranchRepository.getById(employeeRequestDTO.getBranchNo()));
         employee.setUserName(employeeRequestDTO.getEmail().substring(0, employeeRequestDTO.getEmail().indexOf("@")));
-        employee.setRole(roleRepository.getById(employeeRequestDTO.getRoleNo()));
+        employee = employeeRepository.save(employee);
+        List<EmployeeRole> employeeRoles = new ArrayList<>();
+        for (int roleNo : employeeRequestDTO.getRoleNos()) {
+            EmployeeRole employeeRole = new EmployeeRole();
+            employeeRole.setEmployee(employeeRepository.getById(employee.getEmployeeNo()));
+            employeeRole.setRole(roleRepository.getById(roleNo));
+            employeeRoles.add(employeeRole);
+        }
+        employee.setEmployeeRoles(employeeRoles);
+        employeeRoles = employeeRoleRepository.saveAll(employeeRoles);
         return getEmployeeResponseDTO(employee);
     }
 
     private EmployeeResponseDTO getEmployeeResponseDTO(Employee employee) {
         employeeRepository.save(employee);
-
         EmployeeResponseDTO employeeResponseDTO = employeeResponseMapper.toDTO(employee);
         employeeResponseDTO.setFullName(employee.getLastName() + " " + employee.getFirstName());
         employeeResponseDTO.setBranchName(employee.getCompanyBranch().getBranchName());
-        employeeResponseDTO.setRoleName(employee.getRole().getRoleName());
+        List<ERole> roleNames = new ArrayList<>();
+        for (EmployeeRole employeeRole: employee.getEmployeeRoles()) {
+            ERole roleName = employeeRole.getRole().getRoleName();
+            roleNames.add(roleName);
+        }
+        employeeResponseDTO.setRoleNames(roleNames);
         return employeeResponseDTO;
     }
     @Transactional
@@ -119,6 +154,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException(MessageConstant.EMPLOYEE_IS_NULL);
         }
+        employeeRoleRepository.findEmployeeRolesByEmployeeNo(id);
         openTalkTopicRepository.deleteOpenTalkTopicsByEmployeeNo(id);
         employeeRepository.deleteById(id);
         return MessageConstant.DELETE_DONE;
@@ -127,8 +163,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeResponseDTO addEmployee(EmployeeRequestDTO employeeRequestDTO) {
         Optional<CompanyBranch> companyBranchOptional = companyBranchRepository.findById(employeeRequestDTO.getBranchNo());
-        Optional<Role> roleOptional = roleRepository.findById(employeeRequestDTO.getRoleNo());
-        if (!companyBranchOptional.isPresent() || !roleOptional.isPresent()) {
+        List<Role> roles = roleRepository.getSetRoleByRoleNo(employeeRequestDTO.getRoleNos());
+        if (!companyBranchOptional.isPresent() || roles.isEmpty()) {
             throw new NotFoundException(MessageConstant.COMPANY_BRANCH_OR_ROLE_IS_NULL);
         }
         List<Employee> employeeListGet = employeeRepository.findAll();
@@ -141,8 +177,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeListGet.isEmpty() || !emailListGet.contains(employeeRequestDTO.getEmail())) {
             Employee employee = employeeRequestMapper.toEntity(employeeRequestDTO);
             employee.setCompanyBranch(companyBranchOptional.get());
+            employee.setPassword(employeeRequestDTO.getPassword());
             employee.setUserName(employeeRequestDTO.getEmail().substring(0, employeeRequestDTO.getEmail().indexOf("@")));
-            employee.setRole(roleOptional.get());
+            employee = employeeRepository.save(employee);
+            List<EmployeeRole> employeeRoles = new ArrayList<>();
+            for (int roleNo : employeeRequestDTO.getRoleNos()) {
+                EmployeeRole employeeRole = new EmployeeRole();
+                employeeRole.setEmployee(employeeRepository.getById(employee.getEmployeeNo()));
+                employeeRole.setRole(roleRepository.getById(roleNo));
+                employeeRoles.add(employeeRole);
+            }
+            employee.setEmployeeRoles(employeeRoles);
+            employeeRoles = employeeRoleRepository.saveAll(employeeRoles);
             return getEmployeeResponseDTO(employee);
         }
         return null;
@@ -159,7 +205,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             EmployeeResponseDTO employeeResponseDTO = employeeResponseMapper.toDTO(employee);
             employeeResponseDTO.setFullName(employee.getLastName() + " " + employee.getFirstName());
             employeeResponseDTO.setBranchName(employee.getCompanyBranch().getBranchName());
-            employeeResponseDTO.setRoleName(employee.getRole().getRoleName());
+            List<ERole> roleNames = new ArrayList<>();
+            for (EmployeeRole employeeRole: employee.getEmployeeRoles()) {
+                ERole roleName = employeeRole.getRole().getRoleName();
+                roleNames.add(roleName);
+            }
+            employeeResponseDTO.setRoleNames(roleNames);
             employeeResponseDTOList.add(employeeResponseDTO);
         }
         return employeeResponseDTOList;
@@ -173,7 +224,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             EmployeeResponseDTO employeeResponseDTO = employeeResponseMapper.toDTO(employee);
             employeeResponseDTO.setFullName(employee.getLastName() + " " + employee.getFirstName());
             employeeResponseDTO.setBranchName(employee.getCompanyBranch().getBranchName());
-            employeeResponseDTO.setRoleName(employee.getRole().getRoleName());
+            List<ERole> roleNames = new ArrayList<>();
+            for (EmployeeRole employeeRole: employee.getEmployeeRoles()) {
+                ERole roleName = employeeRole.getRole().getRoleName();
+                roleNames.add(roleName);
+            }
+            employeeResponseDTO.setRoleNames(roleNames);
             employeeResponseDTOList.add(employeeResponseDTO);
         }
         return employeeResponseDTOList;

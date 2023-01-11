@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.util.List;
 
 @Repository
 public interface OpenTalkTopicRepository extends JpaRepository<OpenTalkTopic, Integer> {
@@ -59,7 +60,8 @@ public interface OpenTalkTopicRepository extends JpaRepository<OpenTalkTopic, In
                                                                      @Param("employeeNo") Integer employeeNo);
 
     @Query(nativeQuery = true,
-            value = "SELECT opt.topic_name as topicName, " +
+            value = "SELECT opt.topic_no as topicNo, " +
+                    "opt.topic_name as topicName, " +
                     "opt.branch_no as branchNo," +
                     "opt.link_meeting as linkMeeting, " +
                     "cb.branch_name as branchName, " +
@@ -69,7 +71,8 @@ public interface OpenTalkTopicRepository extends JpaRepository<OpenTalkTopic, In
                     "JOIN COMPANY_BRANCH cb ON opt.branch_no = cb.branch_no " +
                     "JOIN EMPLOYEE em ON opt.employee_no = em.employee_no " +
                     "WHERE opt.date > CURRENT_DATE " +
-                    "ORDER BY opt.date ASC " +
+                    "ORDER BY opt.date " +
                     "LIMIT 1")
     public OpenTalkTopicProjection getOpenTalkTopicIsComingSoon();
+
 }

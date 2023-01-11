@@ -47,4 +47,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT em FROM Employee em " +
             "WHERE em.companyBranch.branchNo = :branchNo")
     public List<Employee> getEmployeesByBranchNo(@Param("branchNo") Integer branchNo);
+
 }

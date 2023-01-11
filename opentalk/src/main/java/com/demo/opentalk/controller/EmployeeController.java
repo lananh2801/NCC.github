@@ -1,11 +1,8 @@
 package com.demo.opentalk.controller;
 
-import com.demo.opentalk.dto.EmployeeDTO;
 import com.demo.opentalk.dto.request.EmployeeRequestDTO;
 import com.demo.opentalk.dto.request.EmployeesRequestDTO;
 import com.demo.opentalk.dto.response.EmployeeResponseDTO;
-import com.demo.opentalk.model.projection.EmployeeProjection;
-import com.demo.opentalk.repository.EmployeeRepository;
 import com.demo.opentalk.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

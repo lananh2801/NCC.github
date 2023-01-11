@@ -3,6 +3,7 @@ package com.demo.opentalk.service;
 import com.demo.opentalk.dto.request.OpenTalkTopicRequestDTO;
 import com.demo.opentalk.dto.response.OpenTalkTopicResponseDTO;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import java.sql.Date;
@@ -21,4 +22,5 @@ public interface OpenTalkTopicService {
     List<OpenTalkTopicResponseDTO> getOpenTalkTopicIsRegisterForEmployee(Pageable pageable, Integer employeeNo);
     String sendMailOpenTalk(Integer topicNo, String[] email) throws MessagingException;
     String sendMailWithScheduled();
+    String uploadSlide(MultipartFile file);
 }

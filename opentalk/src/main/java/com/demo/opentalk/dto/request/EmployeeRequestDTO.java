@@ -2,6 +2,9 @@ package com.demo.opentalk.dto.request;
 
 import lombok.*;
 
+import java.util.List;
+import java.util.Set;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
@@ -14,5 +17,5 @@ public class EmployeeRequestDTO {
     private String password;
     private boolean active;
     private int branchNo;
-    private int roleNo;
+    private List<Integer> roleNos;
 }

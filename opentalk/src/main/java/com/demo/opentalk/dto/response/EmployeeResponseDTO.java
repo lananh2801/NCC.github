@@ -1,6 +1,9 @@
 package com.demo.opentalk.dto.response;
 
+import com.demo.opentalk.config.ERole;
 import lombok.*;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,5 +17,5 @@ public class EmployeeResponseDTO {
     private String email;
     private boolean active;
     private String branchName;
-    private String roleName;
+    private List<ERole> roleNames;
 }

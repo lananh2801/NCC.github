@@ -17,19 +17,26 @@ import com.demo.opentalk.repository.OpenTalkTopicRepository;
 import com.demo.opentalk.service.MailService;
 import com.demo.opentalk.service.OpenTalkTopicService;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.var;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +49,8 @@ public class OpenTalkTopicServiceImpl implements OpenTalkTopicService {
     private final EmployeeResponseMapper employeeResponseMapper;
     private final CompanyBranchRepository companyBranchRepository;
     private final MailService mailService;
+    private final String SLIDE_PATH = "src/main/resources/static/";
+    private final Environment env;
 
     @Override
     public OpenTalkTopicResponseDTO addOpenTalkTopic(OpenTalkTopicRequestDTO openTalkTopicRequestDTO) {
@@ -115,6 +124,9 @@ public class OpenTalkTopicServiceImpl implements OpenTalkTopicService {
 
     @Override
     public String sendMailOpenTalk(Integer topicNo, String[] email) throws MessagingException {
+        if (!openTalkTopicRepository.findById(topicNo).isPresent()) {
+            throw new NotFoundException(MessageConstant.OPEN_TALK_TOPIC_IS_NULL);
+        }
         OpenTalkTopic openTalkTopic = openTalkTopicRepository.findById(topicNo).get();
         MailDTO mailDTO = new MailDTO();
         mailDTO.setTo(email);
@@ -129,8 +141,9 @@ public class OpenTalkTopicServiceImpl implements OpenTalkTopicService {
             return MessageConstant.SEND_MAIL_FAIL;
         }
     }
-    @Scheduled(fixedRate = 120000)
-//    @Scheduled(cron = " 0 0 11 * * FRI ")
+//    @Scheduled(fixedRate = 120000)
+    @Async
+    @Scheduled(cron = " 0 57 15 * * FRI ")
     @Override
     public String sendMailWithScheduled() {
         OpenTalkTopicProjection openTalkTopicProjection = openTalkTopicRepository.getOpenTalkTopicIsComingSoon();
@@ -140,7 +153,7 @@ public class OpenTalkTopicServiceImpl implements OpenTalkTopicService {
 //        String[] email = new String[emails.size()];
 //        emails.toArray(email);
         MailDTO mailDTO = new MailDTO();
-        mailDTO.setTo(new String[]{"lananh2801.ncc@gmail.com", "anh.phamthilan@ncc.asia"});
+        mailDTO.setTo(new String[]{"lanbeu2801@gmail.com", "anh.phamthilan@ncc.asia"});
         mailDTO.setSubject("Invitation: [" + openTalkTopicProjection.getBranchName() + "] [OFFLINE] " + openTalkTopicProjection.getTopicName()
                 + " - " + openTalkTopicProjection.getFullName()
                 + " " + openTalkTopicProjection.getDate() + " 10am - 12am");
@@ -150,6 +163,24 @@ public class OpenTalkTopicServiceImpl implements OpenTalkTopicService {
             return MessageConstant.SEND_MAIL_DONE;
         } catch (Exception e) {
             return MessageConstant.SEND_MAIL_FAIL;
+        }
+    }
+
+    @Override
+    public String uploadSlide(MultipartFile file) {
+        if(file.isEmpty()) {
+            return MessageConstant.FAILED_TO_UPLOAD_EMPTY_FILE;
+        }
+//        if (file.getData().length > 655360L) {
+//            return "File too large!";
+//        }
+        try {
+            var fileName = file.getOriginalFilename();
+            var is = file.getInputStream();
+            Files.copy(is, Paths.get(SLIDE_PATH + fileName));
+            return MessageConstant.UPLOADED_THE_FILE_SUCCESSFULLY;
+        } catch (IOException e) {
+            return MessageConstant.COULD_NOT_UPLOAD_THE_FILE;
         }
     }
 

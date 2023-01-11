@@ -1,22 +1,22 @@
 package com.demo.opentalk.controller;
 
-import com.demo.opentalk.dto.MailDTO;
 import com.demo.opentalk.dto.request.OpenTalkTopicRequestDTO;
 import com.demo.opentalk.dto.response.OpenTalkTopicResponseDTO;
-import com.demo.opentalk.entity.Employee;
-import com.demo.opentalk.model.projection.OpenTalkTopicProjection;
-import com.demo.opentalk.repository.EmployeeRepository;
-import com.demo.opentalk.repository.OpenTalkTopicRepository;
 import com.demo.opentalk.service.MailService;
 import com.demo.opentalk.service.OpenTalkTopicService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -83,5 +83,10 @@ public class OpenTalkTopicController {
     @PostMapping("send-mail-with-scheduled")
     public String sendMailWithScheduled() {
         return openTalkTopicService.sendMailWithScheduled();
+    }
+
+    @PostMapping("upload-slide")
+    public String uploadSlide(@RequestParam MultipartFile file) {
+        return openTalkTopicService.uploadSlide(file);
     }
 }
