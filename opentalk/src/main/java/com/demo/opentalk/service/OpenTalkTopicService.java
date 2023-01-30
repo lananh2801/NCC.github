@@ -23,4 +23,5 @@ public interface OpenTalkTopicService {
     String sendMailOpenTalk(Integer topicNo, String[] email) throws MessagingException;
     String sendMailWithScheduled();
     String uploadSlide(MultipartFile file);
+    String sendMailWithHtml(Integer topicNo, String[] emails);
 }

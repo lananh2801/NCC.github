@@ -23,6 +23,6 @@ public class CompanyBranch {
     @Column(name = "BRANCH_NAME")
     private String branchName;
 
-    @OneToMany(mappedBy = "companyBranch", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "companyBranch", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Employee> employeeList;
 }

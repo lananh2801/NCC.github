@@ -48,4 +48,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
             "WHERE em.companyBranch.branchNo = :branchNo")
     public List<Employee> getEmployeesByBranchNo(@Param("branchNo") Integer branchNo);
 
+    public Employee findEmployeeByUserName(@Param("userName") String userName);
+
 }

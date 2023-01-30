@@ -6,5 +6,5 @@ import javax.mail.MessagingException;
 
 public interface MailService {
     String sendMail(MailDTO mailDTO) throws MessagingException;
-    String sendMailWithHTML(MailDTO mailDTO) throws MessagingException;
+    String sendMailWithHTML(MailDTO mailDTO, String templateName) throws MessagingException;
 }

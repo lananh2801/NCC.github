@@ -17,7 +17,6 @@ import com.demo.opentalk.repository.OpenTalkTopicRepository;
 import com.demo.opentalk.service.MailService;
 import com.demo.opentalk.service.OpenTalkTopicService;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.var;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.env.Environment;
@@ -31,12 +30,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -181,6 +177,30 @@ public class OpenTalkTopicServiceImpl implements OpenTalkTopicService {
             return MessageConstant.UPLOADED_THE_FILE_SUCCESSFULLY;
         } catch (IOException e) {
             return MessageConstant.COULD_NOT_UPLOAD_THE_FILE;
+        }
+    }
+
+    @Override
+    public String sendMailWithHtml(Integer topicNo, String[] emails) {
+        if (!openTalkTopicRepository.findById(topicNo).isPresent()) {
+            throw new NotFoundException(MessageConstant.OPEN_TALK_TOPIC_IS_NULL);
+        }
+        OpenTalkTopic openTalkTopic = openTalkTopicRepository.findById(topicNo).get();
+        MailDTO mailDTO = new MailDTO();
+        mailDTO.setTo(emails);
+        mailDTO.setSubject("Invitation: [" + openTalkTopic.getCompanyBranch().getBranchName() + "] [OFFLINE] " + openTalkTopic.getTopicName()
+                + " - " + openTalkTopic.getEmployee().getLastName() + ' ' + openTalkTopic.getEmployee().getFirstName()
+                + " " + openTalkTopic.getDate() + " 10am - 12am");
+
+        Map<String, Object> props = new HashMap<>();
+        props.put("topicName", openTalkTopic.getTopicName());
+        props.put("linkMeeting", openTalkTopic.getLinkMeeting());
+        mailDTO.setProps(props);
+        try {
+            mailService.sendMailWithHTML(mailDTO, "email");
+            return MessageConstant.SEND_MAIL_DONE;
+        } catch (Exception e) {
+            return MessageConstant.SEND_MAIL_FAIL;
         }
     }
 

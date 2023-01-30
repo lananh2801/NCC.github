@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -39,7 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final OpenTalkTopicRepository openTalkTopicRepository;
     private final RestTemplate restTemplate;
     private final EmployeeRoleRepository employeeRoleRepository;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<EmployeeResponseDTO> syncData(EmployeesRequestDTO employeesRequestDTO) {
@@ -177,7 +179,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeListGet.isEmpty() || !emailListGet.contains(employeeRequestDTO.getEmail())) {
             Employee employee = employeeRequestMapper.toEntity(employeeRequestDTO);
             employee.setCompanyBranch(companyBranchOptional.get());
-            employee.setPassword(employeeRequestDTO.getPassword());
+            employee.setPassword(passwordEncoder.encode(employeeRequestDTO.getPassword()));
             employee.setUserName(employeeRequestDTO.getEmail().substring(0, employeeRequestDTO.getEmail().indexOf("@")));
             employee = employeeRepository.save(employee);
             List<EmployeeRole> employeeRoles = new ArrayList<>();

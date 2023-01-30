@@ -31,7 +31,7 @@ public class Employee {
     @Column(name = "USER_NAME")
     private String userName;
 
-    @Column(name = "PASSWORD")
+    @Column(name = "PASSWORD", length = 255)
     private String password;
 
     @Column(name = "EMAIL")
@@ -44,7 +44,10 @@ public class Employee {
     @JoinColumn(name = "BRANCH_NO", nullable = false)
     private CompanyBranch companyBranch;
 
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EmployeeRole> employeeRoles;
+
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<OpenTalkTopic> openTalkTopicList;
 
 }

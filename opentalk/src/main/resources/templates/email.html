@@ -6,14 +6,14 @@
 </head>
   <style>
     body {
-      font-family: 'Roboto', sans-serif;
-      font-size: 48px;
-    }
+        color: red;
+        font-family: 'Times New Roman', sans-serif;
+        font-size: 18px;
+        }
   </style>
-<p th:text="${'Invitation: [' + branchName + '] [OFFLINE] ' + topicName + ' - ' + lastName + ' ' + firstName +
- ' ' + date + ' 10am - 12am'}"></p>
 <body>
-<p> Meeting link: </p>
-<p th:text="${linkMeeting}"></p>
+<!--<p style="color: red; font-family: 'Times New Roman'; font-size: 14px" th:text = "'Topic: ' + ${topicName}"></p>-->
+<p th:text="' -Topic: ' + ${topicName}"></p>
+<p th:text="' -Meeting link: ' + ${linkMeeting}" ></p>
 </body>
 </html>

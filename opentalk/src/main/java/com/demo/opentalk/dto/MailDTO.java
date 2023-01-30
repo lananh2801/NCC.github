@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,4 +15,5 @@ public class MailDTO {
     private String[] to;
     private String subject;
     private String content;
+    private Map<String, Object> props;
 }

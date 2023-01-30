@@ -13,6 +13,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CompanyBranchServiceImpl implements CompanyBranchService {
@@ -49,5 +54,35 @@ public class CompanyBranchServiceImpl implements CompanyBranchService {
         employeeRepository.deleteEmployeesByBranchNo(id);
         companyBranchRepository.deleteById(id);
         return MessageConstant.DELETE_DONE;
+    }
+
+    @Override
+    public CompanyBranch findCompanyById(Integer id) {
+        CompanyBranch companyBranch = companyBranchRepository.findCompanyBranchByBranchNo(id);
+//        CompanyBranchResponseDTO companyBranchResponseDTO = mapper.map(companyBranch, CompanyBranchResponseDTO.class);
+
+        return companyBranch;
+    }
+
+    @Transactional
+    @Override
+    public CompanyBranchResponseDTO updateCompany(CompanyBranchRequestDTO companyBranchRequestDTO) {
+        companyBranchRepository.updateCompany(companyBranchRequestDTO.getBranchNo(), companyBranchRequestDTO.getBranchName());
+        CompanyBranchResponseDTO companyBranchResponseDTO = mapper.map(companyBranchRepository.getById(companyBranchRequestDTO.getBranchNo()),
+                                                            CompanyBranchResponseDTO.class);
+        return companyBranchResponseDTO;
+    }
+
+    @Transactional
+    @Override
+    public String deleteCompanyById(Integer id) {
+        companyBranchRepository.removeCompanyBranchByBranchNo(id);
+        return MessageConstant.DELETE_DONE;
+    }
+
+    @Override
+    public List<CompanyBranch> getAllCompanyBranch() {
+        List<CompanyBranch> companyBranchList = companyBranchRepository.findAll();
+        return companyBranchList;
     }
 }

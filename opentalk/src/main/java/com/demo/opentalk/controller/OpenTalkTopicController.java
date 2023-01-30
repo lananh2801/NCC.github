@@ -89,4 +89,9 @@ public class OpenTalkTopicController {
     public String uploadSlide(@RequestParam MultipartFile file) {
         return openTalkTopicService.uploadSlide(file);
     }
+
+    @PostMapping("send-mail-with-html")
+    public String sendMailWithHtml(@RequestParam Integer topicNo, @RequestParam String[] emails) {
+        return openTalkTopicService.sendMailWithHtml(topicNo, emails);
+    }
 }
