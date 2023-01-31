@@ -41,7 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final OpenTalkTopicRepository openTalkTopicRepository;
     private final RestTemplate restTemplate;
     private final EmployeeRoleRepository employeeRoleRepository;
-    private final PasswordEncoder passwordEncoder;
+//    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<EmployeeResponseDTO> syncData(EmployeesRequestDTO employeesRequestDTO) {
@@ -179,7 +179,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeListGet.isEmpty() || !emailListGet.contains(employeeRequestDTO.getEmail())) {
             Employee employee = employeeRequestMapper.toEntity(employeeRequestDTO);
             employee.setCompanyBranch(companyBranchOptional.get());
-            employee.setPassword(passwordEncoder.encode(employeeRequestDTO.getPassword()));
+            employee.setPassword(employeeRequestDTO.getPassword());
             employee.setUserName(employeeRequestDTO.getEmail().substring(0, employeeRequestDTO.getEmail().indexOf("@")));
             employee = employeeRepository.save(employee);
             List<EmployeeRole> employeeRoles = new ArrayList<>();

@@ -49,5 +49,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     public List<Employee> getEmployeesByBranchNo(@Param("branchNo") Integer branchNo);
 
     public Employee findEmployeeByUserName(@Param("userName") String userName);
+    public Boolean existsEmployeeByUserName(String userName);
 
+    public Boolean existsEmployeeByEmail(String email);
 }

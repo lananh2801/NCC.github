@@ -50,4 +50,6 @@ public class Employee {
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<OpenTalkTopic> openTalkTopicList;
 
+    public Employee(String username, String email, String encode) {
+    }
 }
