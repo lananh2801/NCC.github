@@ -5,15 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Getter
-public class SingUpRequest {
-    private String userName;
-    private String password;
+@Setter
+public class JwtResponse {
+    private String jwt;
+    private Integer id;
+    private String username;
     private String email;
-    private Integer branchNo;
-    private Set<String> role;
+    private List<String> roles;
 }

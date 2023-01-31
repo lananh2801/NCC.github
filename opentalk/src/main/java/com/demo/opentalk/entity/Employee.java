@@ -44,7 +44,7 @@ public class Employee {
     @JoinColumn(name = "BRANCH_NO", nullable = false)
     private CompanyBranch companyBranch;
 
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "employee", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<EmployeeRole> employeeRoles;
 
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

@@ -20,6 +20,6 @@ public class UserService implements UserDetailsService {
         if (employee == null) {
             throw new NotFoundException(MessageConstant.EMPLOYEE_IS_NULL);
         }
-        return new CustomUserDetails(employee);
+        return UserDetailsImpl.build(employee);
     }
 }
