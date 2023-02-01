@@ -49,32 +49,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         // Được quyền truy cập khi chưa login
-        http.authorizeRequests().antMatchers("/api/signup", "api/signin").permitAll();
+        http.authorizeRequests().antMatchers("/signup", "/signin").permitAll();
+
+        // Có những quyền Admin sẽ được truy cập
+        http.authorizeRequests().antMatchers("/employee/*", "/admin/*", "/company/*","/role/*" )
+                .hasAnyAuthority("ROLE_ADMIN");
 
         // Có những quyền Admin, User sẽ được truy cập
-        http.authorizeRequests().antMatchers("/employee/*").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER");
+        http.authorizeRequests().antMatchers("/open-talk/")
+                .hasAnyAuthority("ROLE_ADMIN", "ROLE_USER");
 
         // Khi không đủ quyền truy cập sẽ bị chuyển hướng
         http.authorizeRequests().and().exceptionHandling().accessDeniedPage("/error");
 
-//        http.cors().and().csrf().disable()
-//                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-//                .antMatchers("/api/test/**").permitAll()
-//                .anyRequest().authenticated();
-
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-//        http
-//                .authorizeRequests()
-//                .antMatchers("/", "/employee/signup", "/login").permitAll() // Cho phép tất cả mọi người truy cập vào 2 địa chỉ này
-//                .anyRequest().authenticated() // Tất cả các request khác đều cần phải xác thực mới được truy cập
-//                .and()
-//                .formLogin() // Cho phép người dùng xác thực bằng form login
-//                .defaultSuccessUrl("/hello")
-//                .permitAll() // Tất cả đều được truy cập vào địa chỉ này
-//                .and()
-//                .logout() // Cho phép logout
-//                .permitAll();
     }
 }

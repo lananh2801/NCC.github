@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/company")
 public class CompanyBranchController {
     private final CompanyBranchService companyBranchService;
 

@@ -20,21 +20,22 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/open-talk")
 public class OpenTalkTopicController {
     private final OpenTalkTopicService openTalkTopicService;
     private final MailService mailService;
 
-    @PostMapping("add-open-talk-topic")
+    @PostMapping("admin/add-open-talk-topic")
     public OpenTalkTopicResponseDTO addOpenTalkTopic(@RequestBody OpenTalkTopicRequestDTO openTalkTopicRequestDTO) {
         return openTalkTopicService.addOpenTalkTopic(openTalkTopicRequestDTO);
     }
 
-    @PutMapping("update-open-talk-topic")
+    @PutMapping("admin/update-open-talk-topic")
     public OpenTalkTopicResponseDTO updateOpenTalkTopic(@RequestBody OpenTalkTopicRequestDTO openTalkTopicRequestDTO) {
         return openTalkTopicService.updateOpenTalkTopic(openTalkTopicRequestDTO);
     }
 
-    @DeleteMapping("delete-open-talk-topic/{id}")
+    @DeleteMapping("admin/delete-open-talk-topic/{id}")
     public String deleteOpenTalkTopic(@PathVariable Integer id) {
         return openTalkTopicService.deleteOpenTalkTopic(id);
     }
@@ -50,7 +51,7 @@ public class OpenTalkTopicController {
         return openTalkTopicService.getOpenTalkTopicByCriteria(pageable, active, branchNo, firstName, startDate, endDate);
     }
 
-    @GetMapping("get-open-talk-topic-up-coming")
+    @GetMapping("admin/get-open-talk-topic-up-coming")
     public List<OpenTalkTopicResponseDTO> getOpenTalkTopicUpComing(
             Pageable pageable,
             @RequestParam(required = false) Integer branchNo,
@@ -60,7 +61,7 @@ public class OpenTalkTopicController {
         return openTalkTopicService.getOpenTalkTopicUpComing(pageable, branchNo, firstName, startDate, endDate);
     }
 
-    @GetMapping("get-open-talk-topic-for-employeeNo")
+    @GetMapping("admin/get-open-talk-topic-for-employeeNo")
     public List<OpenTalkTopicResponseDTO> getOpenTalkTopicForEmployeeNo(
             @RequestParam Integer employeeNo,
             Pageable pageable,
@@ -75,12 +76,12 @@ public class OpenTalkTopicController {
         return openTalkTopicService.getOpenTalkTopicIsRegisterForEmployee(pageable, employeeNo);
     }
 
-    @PostMapping("send-mail-open-talk")
+    @PostMapping("admin/send-mail-open-talk")
     public String sendMailOpenTalk(@RequestParam Integer topicNo, @RequestParam String[] email) throws MessagingException {
         return openTalkTopicService.sendMailOpenTalk(topicNo, email);
     }
 
-    @PostMapping("send-mail-with-scheduled")
+    @PostMapping("admin/send-mail-with-scheduled")
     public String sendMailWithScheduled() {
         return openTalkTopicService.sendMailWithScheduled();
     }
@@ -90,7 +91,7 @@ public class OpenTalkTopicController {
         return openTalkTopicService.uploadSlide(file);
     }
 
-    @PostMapping("send-mail-with-html")
+    @PostMapping("admin/send-mail-with-html")
     public String sendMailWithHtml(@RequestParam Integer topicNo, @RequestParam String[] emails) {
         return openTalkTopicService.sendMailWithHtml(topicNo, emails);
     }
