@@ -10,7 +10,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Setter
 @Getter
-public class SingUpRequest {
+public class SignUpRequest {
     private String userName;
     private String password;
     private String email;

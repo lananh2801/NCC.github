@@ -1,29 +1,15 @@
 package com.demo.opentalk.controller;
 
-import com.demo.opentalk.config.ERole;
-import com.demo.opentalk.config.SingUpRequest;
 import com.demo.opentalk.dto.request.EmployeeRequestDTO;
 import com.demo.opentalk.dto.request.EmployeesRequestDTO;
 import com.demo.opentalk.dto.response.EmployeeResponseDTO;
-import com.demo.opentalk.entity.Employee;
-import com.demo.opentalk.entity.EmployeeRole;
-import com.demo.opentalk.entity.Role;
-import com.demo.opentalk.repository.CompanyBranchRepository;
-import com.demo.opentalk.repository.EmployeeRepository;
-import com.demo.opentalk.repository.EmployeeRoleRepository;
-import com.demo.opentalk.repository.RoleRepository;
 import com.demo.opentalk.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
