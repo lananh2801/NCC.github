@@ -1,6 +1,6 @@
 package com.demo.opentalk.filter;
 
-import com.demo.opentalk.security.UserService;
+import com.demo.opentalk.security.UserDetailsServiceImpl;
 import com.demo.opentalk.utils.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private UserService userService;
+    private UserDetailsServiceImpl userService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 

@@ -19,12 +19,6 @@ public class ThymeleafTemplateConfig {
         return templateResolver;
     }
 
-//    private ResourceBundleMessageSource emailMessageSource() {
-//        final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-//        messageSource.setBasename("mail/MailMessages");
-//        return messageSource;
-//    }
-
     @Bean
     public SpringTemplateEngine springTemplateEngine(ITemplateResolver templateResolver) {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();

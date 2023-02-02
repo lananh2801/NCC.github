@@ -20,10 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -58,11 +55,7 @@ public class AuthController {
                     .body("Error: Email is already in use!");
         }
 
-        // Create new user's account
-//        Employee employee = new Employee(singUpRequest.getUserName(),
-//                singUpRequest.getEmail(),
-//                passwordEncoder.encode(singUpRequest.getPassword()));
-        Employee employee =new Employee();
+        Employee employee = new Employee();
         employee.setUserName(singUpRequest.getUserName());
         employee.setPassword(passwordEncoder.encode(singUpRequest.getPassword()));
         employee.setEmail(singUpRequest.getEmail());
@@ -85,12 +78,6 @@ public class AuthController {
                         roles.add(adminRole);
 
                         break;
-//                    case "mod":
-//                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-//                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-//                        roles.add(modRole);
-//
-//                        break;
                     default:
                         Role userRole = roleRepository.findByRoleName(ERole.ROLE_USER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -131,4 +118,7 @@ public class AuthController {
                 userDetails.getEmail(),
                 roles));
     }
+
+//    @GetMapping("/logout")
+//    public ResponseEntity<?> logoutUser()
 }
