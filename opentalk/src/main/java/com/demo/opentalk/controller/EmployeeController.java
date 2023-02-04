@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping("employee/")
 public class EmployeeController {
     private final EmployeeService employeeService;
+    
 
     @PostMapping("add-employee-sync-data")
     public List<EmployeeResponseDTO> syncData(@RequestBody EmployeesRequestDTO employeesRequestDTO) {
